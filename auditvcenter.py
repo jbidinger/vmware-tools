@@ -97,7 +97,7 @@ def get_clusters(dcenter):
             for h in cluster.host:
                 cl[cluster.name].append(h.name)
             if sys.stdout.isatty():
-                print("Cluster: %-30s" % cluster.name, end='\r')
+                print("Datacenter: %-s Cluster: %s %10s" % (dcenter.name,cluster.name,""), end='\r')
                 sys.stdout.flush()    
 
     if sys.stdout.isatty():
@@ -144,6 +144,9 @@ def main():
     try:
         service_instance,content = connect_vc(args.host,args.user,args.password,args.port)
 
+        if sys.stdout.isatty():
+            print("vCenter: %s" % args.host)
+        
         content = service_instance.RetrieveContent()
 
         container = content.rootFolder  # starting point to look into
@@ -157,7 +160,7 @@ def main():
             get_dstores(dc)
 
         vmcount=0
-        print("vCenter: %s" % args.host)
+        
         for dc in datacenters:
             for vm in sorted(datacenters[dc]['vms'],key=lambda s: s.lower()):
                 vmcount+=1
@@ -178,8 +181,8 @@ def main():
                     sys.stdout.flush()
 #                print("%-15s:%-10s %-8s %-30s %-30s %s %s %s %s" % (dc, c, vort,v.name,v.summary.guest.hostName, v.config.guestId, v.summary.config.guestFullName,v.guest.guestState,v.guest.ipAddress  ))
                 #print vort, v.name, v.summary.guest.hostName, v.guest.guestId, v.summary.config.guestFullName,v.guest.guestState,v.guest.ipAddress #,v.summary
-        print("\ncount:",vmcount)
-        json.dumps(audit)        
+#        print("\ncount:",vmcount)
+        print(json.dumps(audit, indent=4, separators=(',', ': ')))
     
     except vmodl.MethodFault as error:
         print("Caught vmodl fault : " + error.msg)
