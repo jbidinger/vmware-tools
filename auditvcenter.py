@@ -27,38 +27,6 @@ context.verify_mode = ssl.CERT_NONE
 #
 #
 
-def print_vm_info(virtual_machine):
-    """
-    Print information for a particular virtual machine or recurse into a
-    folder with depth protection
-    """
-    summary = virtual_machine.summary
-    print("Name       : ", summary.config.name)
-    print("Template   : ", summary.config.template)
-    print("Path       : ", summary.config.vmPathName)
-    print("Guest      : ", summary.config.guestFullName)
-    print("Instance UUID : ", summary.config.instanceUuid)
-    print("Bios UUID     : ", summary.config.uuid)
-    annotation = summary.config.annotation
-    if annotation:
-        print("Annotation : ", annotation)
-    print("State      : ", summary.runtime.powerState)
-    if summary.guest is not None:
-        ip_address = summary.guest.ipAddress
-        tools_version = summary.guest.toolsStatus
-        if tools_version is not None:
-            print("VMware-tools: ", tools_version)
-        else:
-            print("Vmware-tools: None")
-        if ip_address:
-            print("IP         : ", ip_address)
-        else:
-            print("IP         : None")
-    if summary.runtime.question is not None:
-        print("Question  : ", summary.runtime.question.text)
-    print("")
-
-
 def connect_vc(hostname,username,password,prt=443):
     si = None
     si = connect.SmartConnect(host=hostname,user=username, pwd=password, port=prt, sslContext=context)
@@ -174,7 +142,7 @@ def main():
                 audit[v.name]['hostname']   = v.summary.guest.hostName
                 audit[v.name]['guestid']    = v.config.guestId
                 audit[v.name]['fullname']   = v.summary.config.guestFullName
-                audit[v.name]['state']      = v.guest.guestState
+                audit[v.name]['state']      = v.runtime.powerState
                 audit[v.name]['ip']         = v.guest.ipAddress
                 if sys.stdout.isatty():
                     print(vmcount,"Guests processed",end='\r')
@@ -182,6 +150,7 @@ def main():
 #                print("%-15s:%-10s %-8s %-30s %-30s %s %s %s %s" % (dc, c, vort,v.name,v.summary.guest.hostName, v.config.guestId, v.summary.config.guestFullName,v.guest.guestState,v.guest.ipAddress  ))
                 #print vort, v.name, v.summary.guest.hostName, v.guest.guestId, v.summary.config.guestFullName,v.guest.guestState,v.guest.ipAddress #,v.summary
 #        print("\ncount:",vmcount)
+ 
         print(json.dumps(audit, indent=4, separators=(',', ': ')))
     
     except vmodl.MethodFault as error:
