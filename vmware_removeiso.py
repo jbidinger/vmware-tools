@@ -11,6 +11,9 @@
 # http://opensource.org/licenses/Apache-2.0
 #
 
+# Example command line
+# ./vmware_removeiso.py -u 'admgageio\jbidinger'  -s msp-vcenter.ad.mgage.io -n msp-dcosboot-01.ad.mgage.io -m 1
+
 import atexit
 import requests
 from tools import cli
