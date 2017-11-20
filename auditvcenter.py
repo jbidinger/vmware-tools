@@ -1,4 +1,4 @@
-#!/usr/local/bin/python
+#!/usr/bin/env python
 """
 Python program for listing the vms on an ESX / vCenter host
 """
@@ -24,6 +24,9 @@ requests.packages.urllib3.disable_warnings()
 import ssl
 context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
 context.verify_mode = ssl.CERT_NONE
+
+if hasattr(ssl, "_https_verify_certificates"):
+  ssl._https_verify_certificates(enable=False)
 #
 #
 
